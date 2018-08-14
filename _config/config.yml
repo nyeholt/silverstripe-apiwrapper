@@ -1,0 +1,6 @@
+---
+Name: apiwrapper_routes
+---
+SilverStripe\Control\Director:
+  rules:
+    api: Symbiote\ApiWrapper\ApiWrapperController
