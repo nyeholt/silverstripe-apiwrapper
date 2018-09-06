@@ -1,31 +1,75 @@
 # [Module Title]
 
-(Find + Replace the below badge links from "symbiote/silverstripe-gridfieldextensions" to your packagist name)
+[![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-apiwrapper/version.svg)](https://github.com/symbiote/silverstripe-apiwrapper/releases)
+[![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-apiwrapper/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-apiwrapper)
+[![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-apiwrapper/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-apiwrapper)
+[![License](https://poser.pugx.org/symbiote/silverstripe-apiwrapper/license.svg)](https://github.com/symbiote/silverstripe-apiwrapper/blob/master/LICENSE.md)
 
-[![Build Status](https://travis-ci.org/symbiote/silverstripe-gridfieldextensions.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-gridfieldextensions)
-[![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-gridfieldextensions/version.svg)](https://github.com/symbiote/silverstripe-gridfieldextensions/releases)
-[![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-gridfieldextensions/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-gridfieldextensions)
-[![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-gridfieldextensions/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-gridfieldextensions)
-[![License](https://poser.pugx.org/symbiote/silverstripe-gridfieldextensions/license.svg)](https://github.com/symbiote/silverstripe-gridfieldextensions/blob/master/LICENSE.md)
 
-[Short Description, 2-4 sentences]
-
-![TODO_CHANGE_THIS](docs/images/main.png)
+Wrap your service APIs in a web layer
 
 ## Composer Install
 
 ```
-composer require symbiote/silverstripe-newmodule:~1.0
+composer require symbiote/silverstripe-apiwrapper:~1.0
 ```
 
 ## Requirements
 
-* SilverStripe 3.1+
-* MultiValueField 1.1+
+* SilverStripe 4.1+
 
 ## Documentation
 
-* [Quick Start](docs/en/quick-start.md)
+**Quick start**
+
+Suppose we have a class `Symbiote\Watch\WatchService` that we want to expose
+to web requests via /api/v1/watch/{methodname}
+
+First, implement `webEnabledMethods`, returning an array of methods mapping to
+the request types that can trigger them, ie
+
+```
+    public function webEnabledMethods()
+    {
+        return [
+            'store' => 'POST',
+            'list' => 'GET',
+        ];
+    }
+
+```
+
+If you want some methods to be publicly accessible, return a map of those
+
+```
+    public function publicWebMethods()
+    {
+        return [
+            'list' => true,
+        ];
+    }
+
+```
+
+
+In config;
+
+```
+---
+Name: my_webservices
+---
+Symbiote\ApiWrapper\ApiWrapperController:
+  versions:
+    v1:
+      watch: 'WatchServiceApiController' # The name of an injector service
+
+SilverStripe\Core\Injector\Injector:
+  WatchServiceApiController: # Referenced by above
+    class: Symbiote\ApiWrapper\ServiceWrapperController
+    properties:
+      service: %$Symbiote\Watch\WatchService
+```
+
 * [Advanced Usage](docs/en/advanced-usage.md)
 * [License](LICENSE.md)
 * [Contributing](CONTRIBUTING.md)
