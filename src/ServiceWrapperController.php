@@ -12,6 +12,7 @@ use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\SS_List;
+use SilverStripe\Security\Permission;
 
 class ServiceWrapperController extends Controller
 {
