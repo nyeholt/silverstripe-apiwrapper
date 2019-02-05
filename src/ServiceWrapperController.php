@@ -13,6 +13,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\Security\Permission;
+use SilverStripe\Core\Injector\Injector;
 
 class ServiceWrapperController extends Controller
 {
