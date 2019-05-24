@@ -2,17 +2,6 @@
 
 ## Information
 
-This area has sections with everything you need to know about the module. This is to ensure your can easily CTRL+F and find
-documentation without multiple mouse clicks.
-
-- See Misdirection and it's "Overview" section for an example: [Misdirection](https://github.com/nglasl/silverstripe-misdirection)
-- See SteamedClams and everything below "Configuration" section for an example: [Steamed Clams](https://github.com/SilbinaryWolf/silverstripe-steamedclams)
-
-An example of documentation that fragments the documentation is:
-
-- [Silvershop](https://github.com/silvershop/silvershop-core), hard to find out how to disable shipping.
-- [Userforms](https://github.com/silvershop/silvershop-core), hard to find information about spam protection support.
-
 ## Configuration
 
 Show all configuration values in YML format with their default value

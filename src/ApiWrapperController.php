@@ -53,7 +53,13 @@ class ApiWrapperController extends Controller
         return parent::handleRequest($request);
     }
 
-    protected function addCorsHeaders(HTTPResponse $response) {
+    public function index()
+    {
+        return $this->httpError(404);
+    }
+
+    protected function addCorsHeaders(HTTPResponse $response)
+    {
         if (count($this->config()->cors)) {
             foreach ($this->config()->cors as $header => $val) {
                 $response->addHeader($header, $val);
