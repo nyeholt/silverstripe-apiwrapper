@@ -10,7 +10,6 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\Security\Permission;
 use SilverStripe\Core\Injector\Injector;
@@ -95,9 +94,11 @@ class ServiceWrapperController extends Controller
                 $allowedMethods = $svc->webEnabledMethods();
             }
 
+            $callMethod = $method;
+
 			// if we have a list of methods, lets use those to restrict
             if (count($allowedMethods)) {
-                $this->checkMethods($method, $allowedMethods, $requestType);
+                $callMethod = $this->checkMethods($method, $allowedMethods, $requestType);
             } else {
 				// we only allow 'read only' requests so we wrap everything
 				// in a readonly transaction so that any database request
@@ -105,20 +106,8 @@ class ServiceWrapperController extends Controller
 				// @TODO
             }
 
-            if (!Member::currentUserID()) {
-				// require service to explicitly state that the method is allowed
-                if (method_exists($svc, 'publicWebMethods')) {
-                    $publicMethods = $svc->publicWebMethods();
-                    if (!isset($publicMethods[$method])) {
-                        throw new WebServiceException(403, "Public method $method not allowed");
-                    }
-                } else {
-                    throw new WebServiceException(403, "Method $method not allowed; no public methods defined");
-                }
-            }
-
             $refObj = new \ReflectionObject($svc);
-            $refMeth = $refObj->getMethod($method);
+            $refMeth = $refObj->getMethod($callMethod);
 			/* @var $refMeth ReflectionMethod */
             if ($refMeth) {
                 $allArgs = $this->getRequestArgs($request, $requestType);
@@ -173,6 +162,9 @@ class ServiceWrapperController extends Controller
                 $idArg = $refParm->getName() . 'ID';
                 $typeArg = $refParm->getName() . 'Class';
 
+                if (!isset($allArgs[$typeArg])) {
+                    throw new \RuntimeException("Missing argument " . $refParm->getName(), 400);
+                }
                 // look up the actual class type
                 $type = DataObject::getSchema()->tableClass($allArgs[$typeArg]);
 
@@ -250,20 +242,32 @@ class ServiceWrapperController extends Controller
         }
 
         $info = $allowedMethods[$method];
+        $methodName = $method;
         $allowedType = $info;
+        $allowPublic = false;
         if (is_array($info)) {
-            $allowedType = isset($info['type']) ? $info['type'] : '';
+            $allowedType = isset($info['type']) ? $info['type'] : 'GET';
 
             if (isset($info['perm'])) {
                 if (!Permission::check($info['perm'])) {
                     throw new WebServiceException(403, "You do not have permission to $method");
                 }
             }
+
+            $allowPublic = isset($info['public']) && $info['public'];
+
+            $methodName = $info['call'] ?? $methodName;
+        }
+
+        if (!Member::currentUserID() && !$allowPublic) {
+            throw new WebServiceException(403, "Method $method not allowed; no public methods defined");
         }
 
 		// otherwise it might be the wrong request type
         if ($requestType != $allowedType) {
             throw new WebServiceException(405, "$method does not support $requestType");
         }
+
+        return $methodName;
     }
 }

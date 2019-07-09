@@ -7,7 +7,6 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\HTTPResponse;
 
-
 class ApiWrapperController extends Controller
 {
     private static $versions = [
