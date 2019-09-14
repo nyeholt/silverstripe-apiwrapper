@@ -39,17 +39,6 @@ the request types that can trigger them, ie
 
 ```
 
-If you want some methods to be publicly accessible, return a map of those
-
-```
-    public function publicWebMethods()
-    {
-        return [
-            'list' => true,
-        ];
-    }
-
-```
 
 
 In config;
@@ -70,6 +59,21 @@ SilverStripe\Core\Injector\Injector:
       service: %$Symbiote\Watch\WatchService
 ```
 
-* [Advanced Usage](docs/en/advanced-usage.md)
+## Additional Options
+
+The return of webEnabledMethods can provide additional information, such as
+
+```
+
+return [
+  'list' => [
+    'type' => 'GET', 
+    'call' => 'myMethod', 
+    'public' => true,
+    'perm' => 'CMS_Access_etc'
+  ]
+]
+```
+
 * [License](LICENSE.md)
 * [Contributing](CONTRIBUTING.md)
