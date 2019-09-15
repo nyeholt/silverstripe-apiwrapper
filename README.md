@@ -68,12 +68,35 @@ The return of webEnabledMethods can provide additional information, such as
 return [
   'list' => [
     'type' => 'GET', 
-    'call' => 'myMethod', 
+    'call' => 'myMethod', // the name of a method on the service to execute 
     'public' => true,
+    'match' => 'regex; see below',
     'perm' => 'CMS_Access_etc'
   ]
 ]
 ```
+
+**match**
+
+You can define a regex in the 'match' key which allows you to match parameters
+from the URL substring that is left after the api and method paths are removed. 
+
+Note that you _must_ define regex using named capture groups. 
+
+For example
+
+`'match' => '(?<parent>\d+)'`
+
+and the URL 
+
+`/api/v1/list/12`
+
+will call the 'list' method with the `$parent` parameter set to 12. 
+
+Note that this must be the _full_ URL match, meaning you should have a capture
+group for all parts of the URL. In other words, the 'match' string is wrapped
+in `"{^" . $match . "$}"` for the regex that actually gets executed. 
+
 
 * [License](LICENSE.md)
 * [Contributing](CONTRIBUTING.md)
