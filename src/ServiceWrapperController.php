@@ -26,6 +26,20 @@ class ServiceWrapperController extends Controller
      */
     public $service;
 
+    /**
+     * Maps an object from a SilverStripe data object to an array
+     * for API usage
+     *
+     * @var ObjectMapper
+     */
+    public $objectMapper;
+
+    public function __construct()
+    {
+        // this is overridable via injection
+        $this->objectMapper = new ObjectMapper;
+    }
+
     public function handleRequest(HTTPRequest $request)
     {
         try {
@@ -117,11 +131,7 @@ class ServiceWrapperController extends Controller
 
                 $return = $refMeth->invokeArgs($svc, $params);
 
-                if ($return instanceof SS_List) {
-                    $return = $return->toNestedArray();
-                } else if ($return instanceof DataObject) {
-                    $return = $return->toMap();
-                }
+                $return = $this->objectMapper->mapObject($return);
 
                 return $this->sendResponse($return);
             }
