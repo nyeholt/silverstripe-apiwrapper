@@ -3,6 +3,7 @@
 namespace Symbiote\ApiWrapper;
 
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\View\ViewableData;
 
@@ -66,6 +67,14 @@ class ObjectMapper
         $items = [
             'items' => $newList,
         ];
+
+        if ($list instanceof PaginatedList) {
+            $items['total'] = $list->getTotalItems();
+            $items['perpage'] = $list->getPageLength();
+            $items['current_page'] = $list->CurrentPage();
+            $items['total_pages'] = $list->TotalPages();
+        }
+
 
         return $items;
     }
