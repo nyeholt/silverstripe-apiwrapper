@@ -60,8 +60,8 @@ class ObjectMapper
     public function mapList($list)
     {
         $newList = [];
-        foreach ($list as $item) {
-            $newList[] = $item instanceof DataObject ? $this->mapObject($item) : $item;
+        foreach ($list as $key => $item) {
+            $newList[$key] = $item instanceof DataObject ? $this->mapObject($item) : $item;
         }
 
         $items = [
