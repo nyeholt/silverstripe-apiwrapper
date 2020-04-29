@@ -5,6 +5,7 @@ namespace Symbiote\ApiWrapper;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\SS_List;
+use SilverStripe\View\ArrayData;
 use SilverStripe\View\ViewableData;
 
 class ObjectMapper
@@ -35,12 +36,22 @@ class ObjectMapper
         $mapping = [];
         $item = [];
 
-        foreach ($this->mapping as $class => $fieldMap) {
-            if (is_a($object, $class)) {
-                $mapping = $fieldMap;
-                break;
+        // if we're given array data, we take the assumption
+        // that the mapping is going to be all keys go to values,
+        // so we map accordingly; this allows the subsequent
+        // value mapping to happen too
+        if ($object instanceof ArrayData) {
+            $data = $object->toMap();
+            $mapping = array_combine(array_keys($data), array_keys($data));
+        } else {
+            foreach ($this->mapping as $class => $fieldMap) {
+                if (is_a($object, $class)) {
+                    $mapping = $fieldMap;
+                    break;
+                }
             }
         }
+
         foreach ($mapping as $field => $name) {
             $value = $object->$field;
             if ($value instanceof ViewableData) {
@@ -65,7 +76,7 @@ class ObjectMapper
             if (is_string($key)) {
                 $isObject = true;
             }
-            $newList[$key] = $item instanceof DataObject ? $this->mapObject($item) : $item;
+            $newList[$key] = ($item instanceof DataObject || $item instanceof ArrayData) ? $this->mapObject($item) : $item;
         }
 
         if ($isObject) {
