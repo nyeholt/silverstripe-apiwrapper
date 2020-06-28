@@ -7,7 +7,8 @@ trait WrappedApi
 
     protected $segment;
 
-    public function setSegment($s) {
+    public function setSegment($s)
+    {
         $this->segment = $s;
     }
 
@@ -20,31 +21,20 @@ trait WrappedApi
         return $json;
     }
 
-    public function validateJson($json, $model)
+    protected function sendRawResponse($body)
     {
-        foreach ($model as $i) {
-            if (!isset($json[$i])) {
-                return false;
-            }
-            if(getype($json[$i]) == "array") {
-                if(!validateJson($json[$i], $model[$i])) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        $this->getResponse()->setBody($body);
+        $this->getResponse()->addHeader("Content-type", "application/json");
+        return $this->getResponse();
     }
 
     public function sendResponse($payload, $message = "success", $status = 200)
     {
-        $this->getResponse()->setBody(json_encode([
+        return $this->sendRawResponse(json_encode([
             "status" => $status,
             "message" => $message,
             "payload" => $payload
         ]));
-
-        $this->getResponse()->addHeader("Content-type", "application/json");
-        return $this->getResponse();
     }
 
     public function sendError($message)

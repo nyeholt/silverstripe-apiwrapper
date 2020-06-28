@@ -131,8 +131,11 @@ class ServiceWrapperController extends Controller
 
                 $return = $refMeth->invokeArgs($svc, $params);
 
-                $return = $this->objectMapper->mapObject($return);
+                if (isset($methodConfig['raw']) && $methodConfig['raw']) {
+                    return $this->sendRawResponse($return);
+                }
 
+                $return = $this->objectMapper->mapObject($return);
                 return $this->sendResponse($return);
             }
         }
