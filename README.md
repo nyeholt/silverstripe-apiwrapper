@@ -98,5 +98,23 @@ group for all parts of the URL. In other words, the 'match' string is wrapped
 in `"{^" . $match . "$}"` for the regex that actually gets executed. 
 
 
+## Token-based authentcation
+
+Add the user token extension for users and then add the token authenticator middleware
+
+```
+
+SilverStripe\Security\Member:
+  extensions:
+    - Symbiote\ApiWrapper\TokenAccessible
+
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Security\AuthenticationHandler:
+    properties:
+      Handlers:
+        token: '%$Symbiote\ApiWrapper\TokenAuthHandler'
+
+```
+
 * [License](LICENSE.md)
 * [Contributing](CONTRIBUTING.md)

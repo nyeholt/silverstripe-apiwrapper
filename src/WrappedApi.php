@@ -21,9 +21,10 @@ trait WrappedApi
         return $json;
     }
 
-    protected function sendRawResponse($body)
+    protected function sendRawResponse($body, $httpStatus = 200)
     {
         $this->getResponse()->setBody($body);
+        $this->getResponse()->setStatusCode($httpStatus);
         $this->getResponse()->addHeader("Content-type", "application/json");
         return $this->getResponse();
     }
@@ -34,15 +35,15 @@ trait WrappedApi
             "status" => $status,
             "message" => $message,
             "payload" => $payload
-        ]));
+        ]), $status);
     }
 
-    public function sendError($message)
+    public function sendError($message, $statusCode = 500)
     {
         return $this->sendResponse(
             [],
             $message,
-            "failure"
+            $statusCode
         );
     }
 }

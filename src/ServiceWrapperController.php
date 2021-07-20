@@ -10,9 +10,9 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\SS_List;
 use SilverStripe\Security\Permission;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Security\Security;
 
 class ServiceWrapperController extends Controller
 {
@@ -289,7 +289,7 @@ class ServiceWrapperController extends Controller
             $methodName = $info['call'] ?? $methodName;
         }
 
-        if (!Member::currentUserID() && !$allowPublic) {
+        if (!Security::getCurrentUser() && !$allowPublic) {
             throw new WebServiceException(403, "Method $method not allowed; no public methods defined");
         }
 
